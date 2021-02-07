@@ -1,19 +1,21 @@
 import React, { useState, useEffect } from 'react'
-import {iex} from '../config/iex'
+import { stock } from '../resources/stock'
 
 const StockRow = ({ ticker }) => {
 
     const [data, setData] = useState({})
 
     useEffect(() => {
-        // query the API
-        const url = `${iex.base_url}/stock/${ticker}/intraday-prices?chartLast=1&token=${iex.api_token}`
-
-        fetch(url)
-        .then((response) => response.json())
+        stock.latestPrice(ticker)
         .then((data) => {
-            console.log(data)
-            setData( data[data.length - 1] )
+            const stockData = data[data.length - 1]
+        const formattedData = {}
+        formattedData.price =stockData.close
+        formattedData.date =stockData.date
+        formattedData.time =stockData.label
+
+
+            setData( formattedData )
         })
 
         
@@ -22,9 +24,9 @@ const StockRow = ({ ticker }) => {
     return (
         <tr>
             <td>{ticker}</td>
-            <td>{data.close}</td>
+            <td>{data.price}</td>
             <td>{data.date}</td>
-            <td>{data.label}</td>
+            <td>{data.time}</td>
         </tr>
     )
 }
