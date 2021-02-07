@@ -4,7 +4,8 @@ import '../styles/stockrow.css'
 
 const StockRow = ({ ticker }) => {
 
-    const [data, setData] = useState({})
+    const [currentData, setCurrentData] = useState({})
+    const [previousData, setPreviousData] = useState({})
 
     useEffect(() => {
         stock.latestPrice(ticker)
@@ -17,20 +18,23 @@ const StockRow = ({ ticker }) => {
 
         stock.getYesterdaysClose(ticker, data.date)
         .then((data) => {
-            const yesterdayData = data
-            console.log(yesterdayData)
+            const yesterdayData = data[data.length-1]
+            const priceDiff = formattedData.price - yesterdayData.close
+            const yesterdayFormattedData = {}
+            yesterdayFormattedData.dollar_change = priceDiff
+            setPreviousData( yesterdayFormattedData )
         })
 
-        setData( formattedData )
+        setCurrentData( formattedData )
         })
     }, [ticker])
 
     return (
         <li className="list-group-item">
-            <b>{ticker}</b> ${data.price}
+            <b>{ticker}</b> ${currentData.price}
             <span className="change">
-                 {data.dollar_change}
-                 {data.percent_change}
+                 {previousData.dollar_change}
+                 {previousData.percent_change}
             </span>
         </li>
     )
